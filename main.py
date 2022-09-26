@@ -35,7 +35,7 @@ def transcribe_from_link(link, categories: bool):
 		with youtube_dl.YoutubeDL(ydl_opts) as ydl:
 			return ydl.extract_info(_id)
 
-	# download the audio of the YouTube video locally
+	# download the audio of the YouTube video locally to your system and pushed for futher processing 
 	meta = get_vid(_id)
 	save_location = meta['id'] + ".mp3"
 
@@ -51,7 +51,7 @@ def transcribe_from_link(link, categories: bool):
 				yield data
 
 
-	# upload audio file to AssemblyAI
+	# upload audio file for transcription
 	upload_response = requests.post(
 		upload_endpoint,
 		headers=headers_auth_only, data=read_file(save_location)
@@ -68,7 +68,7 @@ def transcribe_from_link(link, categories: bool):
 
 	transcript_response = requests.post(transcript_endpoint, json=transcript_request, headers=headers)
 
-	# this is the id of the file that is being transcribed in the AssemblyAI servers
+	# this is the id of the file that is being transcribed 
 	# we will use this id to access the completed transcription
 	transcript_id = transcript_response.json()['id']
 	polling_endpoint = transcript_endpoint + "/" + transcript_id
